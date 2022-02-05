@@ -30,10 +30,9 @@ ASMagicProjectile::ASMagicProjectile()
 	MovementComp->bInitialVelocityInLocalSpace = true;
 }
 
-// Called when the game starts or when spawned
-void ASMagicProjectile::BeginPlay()
+void ASMagicProjectile::PostInitializeComponents()
 {
-	Super::BeginPlay();
+	Super::PostInitializeComponents();
 
 	// Set ignore instigator collision
 	if (APawn* ProjectileInstigator = GetInstigator())
@@ -44,6 +43,12 @@ void ASMagicProjectile::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Projectile %s does not have Instigator."), *GetNameSafe(this));
 	}
+}
+
+// Called when the game starts or when spawned
+void ASMagicProjectile::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 // Called every frame

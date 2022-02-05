@@ -29,6 +29,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UParticleSystemComponent* EffectComp;
 
+	// Allow actors to initialize themselves on the C++ side after all of their components have been initialized
+	virtual void PostInitializeComponents() override;
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
