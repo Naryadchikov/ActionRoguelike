@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "SMagicProjectile.h"
 #include "Camera/CameraComponent.h"
+#include "Components/SInteractionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -23,8 +24,12 @@ ASCharacter::ASCharacter()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
 
+	// Set up movement
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	// Set up interaction component
+	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
 }
 
 // Called when the game starts or when spawned
@@ -61,6 +66,7 @@ void ASCharacter::PrimaryAttack()
 		{
 			return GetMesh()->GetSocketLocation(ProjectileSpawnSocketName);
 		}
+		UE_LOG(LogTemp, Warning, TEXT("Mesh is invalid or socket with 'ProjectileSpawnSocketName' does not exist"));
 		return GetActorLocation();
 	}();
 	const FTransform SpawnTM = FTransform(GetControlRotation(), SpawnLocation);
@@ -69,6 +75,14 @@ void ASCharacter::PrimaryAttack()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	GetWorld()->SpawnActor<ASMagicProjectile>(ProjectileClass, SpawnTM, SpawnParams);
+}
+
+void ASCharacter::PrimaryInteract()
+{
+	if (InteractionComp)
+	{
+		InteractionComp->PrimaryInteract();
+	}
 }
 
 // Called every frame
@@ -113,4 +127,6 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ASCharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
+
+	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
 }

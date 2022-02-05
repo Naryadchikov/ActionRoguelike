@@ -8,6 +8,7 @@
 
 class ASMagicProjectile;
 class UCameraComponent;
+class USInteractionComponent;
 class USpringArmComponent;
 
 UCLASS()
@@ -35,6 +36,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
 
+	UPROPERTY(VisibleAnywhere)
+	USInteractionComponent* InteractionComp;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -46,6 +50,9 @@ protected:
 
 	// Player Primary Attack
 	void PrimaryAttack();
+
+	// Player Primary Interact action
+	void PrimaryInteract();
 
 public:
 	// Called every frame
