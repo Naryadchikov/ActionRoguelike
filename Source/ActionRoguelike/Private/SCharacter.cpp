@@ -30,12 +30,23 @@ ASCharacter::ASCharacter()
 
 	// Set up interaction component
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
+
+	// Set up attack execution delay
+	AttackExecutionDelay = 0.2f;
 }
 
 // Called when the game starts or when spawned
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ASCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	// Clear All timers that belong to this actor.
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 }
 
 void ASCharacter::MoveForward(float Value)
@@ -59,6 +70,23 @@ void ASCharacter::MoveRight(float Value)
 }
 
 void ASCharacter::PrimaryAttack()
+{
+	if (AttackAnim)
+	{
+		if (!GetWorldTimerManager().IsTimerActive(TimerHandle_PrimaryAttack))
+		{
+			PlayAnimMontage(AttackAnim);
+			GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::SpawnPrimaryAttackProjectile,
+			                                AttackExecutionDelay);
+		}
+	}
+	else
+	{
+		SpawnPrimaryAttackProjectile();
+	}
+}
+
+void ASCharacter::SpawnPrimaryAttackProjectile()
 {
 	const FVector SpawnLocation = [this]()
 	{

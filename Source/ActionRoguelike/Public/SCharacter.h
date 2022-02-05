@@ -7,6 +7,7 @@
 #include "SCharacter.generated.h"
 
 class ASMagicProjectile;
+class UAnimMontage;
 class UCameraComponent;
 class USInteractionComponent;
 class USpringArmComponent;
@@ -25,6 +26,16 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Config|PrimaryAttack")
 	FName ProjectileSpawnSocketName;
 
+	// Primary attack animation montage
+	UPROPERTY(EditAnywhere, Category = "Config|PrimaryAttack")
+	UAnimMontage* AttackAnim;
+
+	// Delay after input received and spawning attack projectile
+	UPROPERTY(EditAnywhere, Category = "Config|PrimaryAttack")
+	float AttackExecutionDelay;
+
+	FTimerHandle TimerHandle_PrimaryAttack;
+
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
@@ -42,6 +53,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	// Move forward on player input
 	void MoveForward(float Value);
 
@@ -50,6 +63,9 @@ protected:
 
 	// Player Primary Attack
 	void PrimaryAttack();
+
+	// Spawn actual projectile in appropriate moment during primary attack animation
+	void SpawnPrimaryAttackProjectile();
 
 	// Player Primary Interact action
 	void PrimaryInteract();
