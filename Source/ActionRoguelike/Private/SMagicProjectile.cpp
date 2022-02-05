@@ -34,6 +34,16 @@ ASMagicProjectile::ASMagicProjectile()
 void ASMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Set ignore instigator collision
+	if (APawn* ProjectileInstigator = GetInstigator())
+	{
+		SphereComp->IgnoreActorWhenMoving(ProjectileInstigator, true);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Projectile %s does not have Instigator."), *GetNameSafe(this));
+	}
 }
 
 // Called every frame
