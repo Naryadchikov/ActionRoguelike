@@ -70,11 +70,18 @@ void USInteractionComponent::PrimaryInteract()
 	// if we hit something
 	if (bBlockingHit)
 	{
-		// filter for interactable actors 
-		TArray<FHitResult> FilteredHits = Hits.FilterByPredicate([](const FHitResult Hit)
+		// filter for interactable and visible actors
+		// for visibility check: comparing world time with 'LastRenderTimeOnScreen' of primitive component that was hit
+		// NOTE: 'WasRecentlyRendered()' and 'GetLastRenderTime()' on actor object is not giving correct result
+		TArray<FHitResult> FilteredHits = Hits.FilterByPredicate([this](const FHitResult Hit)
 		{
 			const AActor* HitActor = Hit.GetActor();
-			return HitActor && HitActor->Implements<USInteractableInterface>();
+			const UPrimitiveComponent* PrimitiveHitComponent = Cast<UPrimitiveComponent>(Hit.GetComponent());
+
+			return HitActor
+				&& PrimitiveHitComponent
+				&& HitActor->Implements<USInteractableInterface>()
+				&& GetWorld()->GetTimeSeconds() - PrimitiveHitComponent->GetLastRenderTimeOnScreen() < 0.1f;
 		});
 
 		// if there are any
