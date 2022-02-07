@@ -38,6 +38,7 @@ void ASMagicProjectile::PostInitializeComponents()
 	if (APawn* ProjectileInstigator = GetInstigator())
 	{
 		SphereComp->IgnoreActorWhenMoving(ProjectileInstigator, true);
+		ProjectileInstigator->MoveIgnoreActorAdd(this);
 	}
 	else
 	{

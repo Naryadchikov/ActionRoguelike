@@ -88,6 +88,7 @@ void ASCharacter::PrimaryAttack()
 
 void ASCharacter::SpawnPrimaryAttackProjectile()
 {
+	// find attack spawn location, which is the hand socket
 	const FVector SpawnLocation = [this]()
 	{
 		if (IsValid(GetMesh()) && GetMesh()->DoesSocketExist(ProjectileSpawnSocketName))
@@ -97,7 +98,32 @@ void ASCharacter::SpawnPrimaryAttackProjectile()
 		UE_LOG(LogTemp, Warning, TEXT("Mesh is invalid or socket with 'ProjectileSpawnSocketName' does not exist"));
 		return GetActorLocation();
 	}();
-	const FTransform SpawnTM = FTransform(GetControlRotation(), SpawnLocation);
+
+	// find spawn rotation by line-tracing from camera to the world, finding desired 'impact' location
+	const FVector Start = CameraComp->GetComponentLocation();
+	const FVector End = Start + GetControlRotation().Vector() * 5000.f;
+
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(this);
+
+	FCollisionShape Shape;
+	Shape.SetSphere(20.f);
+
+	FHitResult Hit;
+	const bool bBlockingHit = GetWorld()->SweepSingleByObjectType(Hit, Start, End, FQuat::Identity,
+	                                                              ObjectQueryParams, Shape, CollisionQueryParams);
+
+	const FRotator SpawnRotation = FRotationMatrix::MakeFromX((bBlockingHit ? Hit.ImpactPoint : End) - SpawnLocation).
+		Rotator();
+
+	// spawn projectile
+	const FTransform SpawnTM = FTransform(SpawnRotation, SpawnLocation);
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
