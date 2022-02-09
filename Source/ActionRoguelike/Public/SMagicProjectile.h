@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "SProjectileBase.h"
 #include "SMagicProjectile.generated.h"
 
 class UParticleSystemComponent;
@@ -11,7 +11,7 @@ class UProjectileMovementComponent;
 class USphereComponent;
 
 UCLASS()
-class ACTIONROGUELIKE_API ASMagicProjectile : public AActor
+class ACTIONROGUELIKE_API ASMagicProjectile : public ASProjectileBase
 {
 	GENERATED_BODY()
 
@@ -20,18 +20,6 @@ public:
 	ASMagicProjectile();
 
 protected:
-	UPROPERTY(VisibleAnywhere)
-	USphereComponent* SphereComp;
-
-	UPROPERTY(VisibleAnywhere)
-	UProjectileMovementComponent* MovementComp;
-
-	UPROPERTY(VisibleAnywhere)
-	UParticleSystemComponent* EffectComp;
-
-	// Allow actors to initialize themselves on the C++ side after all of their components have been initialized
-	virtual void PostInitializeComponents() override;
-	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

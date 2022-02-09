@@ -6,7 +6,9 @@
 #include "GameFramework/Character.h"
 #include "SCharacter.generated.h"
 
+class ASDashProjectile;
 class ASMagicProjectile;
+class ASProjectileBase;
 class UAnimMontage;
 class UCameraComponent;
 class USInteractionComponent;
@@ -18,23 +20,51 @@ class ACTIONROGUELIKE_API ASCharacter : public ACharacter
 	GENERATED_BODY()
 
 protected:
+	// Socket name for spawning projectiles
+	UPROPERTY(EditAnywhere, Category = "Config|Attack")
+	FName ProjectileSpawnSocketName;
+
 	// Primary attack projectile class
 	UPROPERTY(EditAnywhere, Category = "Config|PrimaryAttack")
-	TSubclassOf<ASMagicProjectile> ProjectileClass;
-
-	// Primary attack spawn socket name
-	UPROPERTY(EditAnywhere, Category = "Config|PrimaryAttack")
-	FName ProjectileSpawnSocketName;
+	TSubclassOf<ASMagicProjectile> PrimaryProjectileClass;
 
 	// Primary attack animation montage
 	UPROPERTY(EditAnywhere, Category = "Config|PrimaryAttack")
-	UAnimMontage* AttackAnim;
+	UAnimMontage* PrimaryAttackAnim;
 
-	// Delay after input received and spawning attack projectile
+	// Delay after input received and spawning primary attack projectile
 	UPROPERTY(EditAnywhere, Category = "Config|PrimaryAttack")
-	float AttackExecutionDelay;
+	float PrimaryAttackExecutionDelay;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
+
+	// Secondary attack projectile class
+	UPROPERTY(EditAnywhere, Category = "Config|SecondaryAttack")
+	TSubclassOf<ASProjectileBase> SecondaryProjectileClass;
+
+	// Secondary attack animation montage
+	UPROPERTY(EditAnywhere, Category = "Config|SecondaryAttack")
+	UAnimMontage* SecondaryAttackAnim;
+
+	// Delay after input received and spawning secondary attack projectile
+	UPROPERTY(EditAnywhere, Category = "Config|SecondaryAttack")
+	float SecondaryAttackExecutionDelay;
+
+	FTimerHandle TimerHandle_SecondaryAttack;
+
+	// Dash projectile class
+	UPROPERTY(EditAnywhere, Category = "Config|Dash")
+	TSubclassOf<ASDashProjectile> DashProjectileClass;
+
+	// Dash animation montage
+	UPROPERTY(EditAnywhere, Category = "Config|Dash")
+	UAnimMontage* DashAnim;
+
+	// Delay after input received and spawning dash projectile
+	UPROPERTY(EditAnywhere, Category = "Config|Dash")
+	float DashExecutionDelay;
+
+	FTimerHandle TimerHandle_Dash;
 
 public:
 	// Sets default values for this character's properties
@@ -64,8 +94,22 @@ protected:
 	// Player Primary Attack
 	void PrimaryAttack();
 
-	// Spawn actual projectile in appropriate moment during primary attack animation
+	// Player Secondary Attack - Black Hole
+	void BlackHoleAttack();
+
+	// Dash projectile
+	void Dash();
+
+	void SpawnProjectile(TSubclassOf<ASProjectileBase> ClassToSpawn);
+
+	// Spawn primary attack projectile in appropriate moment during primary attack animation
 	void SpawnPrimaryAttackProjectile();
+
+	// Spawn black hole in appropriate moment during secondary attack animation
+	void SpawnBlackHoleProjectile();
+
+	// Spawn dash projectile in appropriate moment during dash animation
+	void SpawnDashProjectile();
 
 	// Player Primary Interact action
 	void PrimaryInteract();
