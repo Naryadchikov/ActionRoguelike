@@ -8,6 +8,7 @@
 #include "Projectiles/SDashProjectile.h"
 #include "DrawDebugHelpers.h"
 #include "Camera/CameraComponent.h"
+#include "Components/SAttributeComponent.h"
 #include "Components/SInteractionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -29,6 +30,9 @@ ASCharacter::ASCharacter()
 	// Set up movement
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	// Set up attribute component
+	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
 	// Set up interaction component
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");

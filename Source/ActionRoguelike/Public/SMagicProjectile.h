@@ -20,10 +20,10 @@ public:
 	ASMagicProjectile();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UFUNCTION()
+	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	                    int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	// Allow actors to initialize themselves on the C++ side after all of their components have been initialized
+	virtual void PostInitializeComponents() override;
 };

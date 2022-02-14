@@ -3,6 +3,7 @@
 
 #include "SMagicProjectile.h"
 
+#include "Components/SAttributeComponent.h"
 #include "Components/SphereComponent.h"
 
 // Sets default values
@@ -11,14 +12,27 @@ ASMagicProjectile::ASMagicProjectile()
 	SphereComp->SetSphereRadius(20.0f);
 }
 
-// Called when the game starts or when spawned
-void ASMagicProjectile::BeginPlay()
+void ASMagicProjectile::PostInitializeComponents()
 {
-	Super::BeginPlay();
+	Super::PostInitializeComponents();
+
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnActorOverlap);
 }
 
-// Called every frame
-void ASMagicProjectile::Tick(float DeltaTime)
+void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                       const FHitResult& SweepResult)
 {
-	Super::Tick(DeltaTime);
+	if (OtherActor)
+	{
+		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(
+			OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+
+		if (AttributeComp)
+		{
+			AttributeComp->ApplyHealthChange(-20.0f);
+
+			Destroy();
+		}
+	}
 }

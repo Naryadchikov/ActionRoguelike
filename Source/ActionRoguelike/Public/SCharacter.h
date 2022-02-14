@@ -11,6 +11,7 @@ class ASMagicProjectile;
 class ASProjectileBase;
 class UAnimMontage;
 class UCameraComponent;
+class USAttributeComponent;
 class USInteractionComponent;
 class USpringArmComponent;
 
@@ -71,14 +72,17 @@ public:
 	ASCharacter();
 
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USpringArmComponent* SpringArmComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UCameraComponent* CameraComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USInteractionComponent* InteractionComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USAttributeComponent* AttributeComp;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
