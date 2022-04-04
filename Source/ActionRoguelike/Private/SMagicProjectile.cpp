@@ -5,6 +5,7 @@
 
 #include "Components/SAttributeComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ASMagicProjectile::ASMagicProjectile()
@@ -17,6 +18,28 @@ void ASMagicProjectile::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASMagicProjectile::OnActorOverlap);
+}
+
+void ASMagicProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+                                        UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (ImpactSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, GetActorLocation(), GetActorRotation(), 1, 1, 0,
+		                                      ImpactSoundAttenuation ? ImpactSoundAttenuation : nullptr);
+	}
+
+	if (ImpactEmitterTemplate)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEmitterTemplate, GetActorLocation());
+	}
+
+	if (WorldCameraShakeClass)
+	{
+		UGameplayStatics::PlayWorldCameraShake(GetWorld(), WorldCameraShakeClass, Hit.Location, 0.0f, 1000.0f);
+	}
+
+	Destroy();
 }
 
 void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

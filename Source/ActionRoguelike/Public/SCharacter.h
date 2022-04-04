@@ -14,6 +14,7 @@ class UCameraComponent;
 class USAttributeComponent;
 class USInteractionComponent;
 class USpringArmComponent;
+class UParticleSystem;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
@@ -36,6 +37,10 @@ protected:
 	// Delay after input received and spawning primary attack projectile
 	UPROPERTY(EditAnywhere, Category = "Config|PrimaryAttack")
 	float PrimaryAttackExecutionDelay;
+
+	// Delay after input received and spawning primary attack projectile
+	UPROPERTY(EditDefaultsOnly, Category = "Config|PrimaryAttack")
+	UParticleSystem* PrimaryAttackCastEffect;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
 
@@ -67,6 +72,9 @@ protected:
 
 	FTimerHandle TimerHandle_Dash;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Config|Damaged")
+	FName DamagedMaterialParameterName;
+
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
@@ -88,6 +96,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	// Allow actors to initialize themselves on the C++ side after all of their components have been initialized
+	virtual void PostInitializeComponents() override;
 
 	// Move forward on player input
 	void MoveForward(float Value);
@@ -117,6 +128,9 @@ protected:
 
 	// Player Primary Interact action
 	void PrimaryInteract();
+
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewValue, float Delta);
 
 public:
 	// Called every frame

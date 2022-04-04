@@ -29,7 +29,7 @@ protected:
 	// Teleportation delay after explosion
 	UPROPERTY(EditAnywhere, Category = "Config")
 	float TeleportationDelay;
-	
+
 	FTimerHandle TimerHandle_Explosion;
 
 	FTimerHandle TimerHandle_Teleportation;
@@ -39,9 +39,8 @@ protected:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	UFUNCTION()
-	void OnDashProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	                         FVector NormalImpulse, const FHitResult& Hit);
+	virtual void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	                             FVector NormalImpulse, const FHitResult& Hit) override;
 
 	void Explode(bool bHit, FVector HitLocation);
 

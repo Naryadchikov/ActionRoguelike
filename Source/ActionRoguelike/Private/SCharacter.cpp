@@ -12,6 +12,7 @@
 #include "Components/SInteractionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -45,6 +46,13 @@ ASCharacter::ASCharacter()
 
 	// Set up primary attack execution delay
 	DashExecutionDelay = 0.2f;
+}
+
+void ASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 }
 
 // Called when the game starts or when spawned
@@ -88,6 +96,14 @@ void ASCharacter::PrimaryAttack()
 		if (!GetWorldTimerManager().IsTimerActive(TimerHandle_PrimaryAttack))
 		{
 			PlayAnimMontage(PrimaryAttackAnim);
+
+			if (PrimaryAttackCastEffect)
+			{
+				UGameplayStatics::SpawnEmitterAttached(PrimaryAttackCastEffect, GetMesh(), ProjectileSpawnSocketName,
+				                                       FVector::ZeroVector, FRotator::ZeroRotator,
+				                                       EAttachLocation::SnapToTarget);
+			}
+
 			GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::SpawnPrimaryAttackProjectile,
 			                                PrimaryAttackExecutionDelay);
 		}
@@ -202,6 +218,22 @@ void ASCharacter::PrimaryInteract()
 	if (InteractionComp)
 	{
 		InteractionComp->PrimaryInteract();
+	}
+}
+
+void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewValue,
+                                  float Delta)
+{
+	if (Delta < 0.0f)
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials(DamagedMaterialParameterName, GetWorld()->GetTimeSeconds());
+	}
+
+	// If player get killed
+	if (NewValue <= 0.0f && Delta < 0.0f)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		DisableInput(PC);
 	}
 }
 

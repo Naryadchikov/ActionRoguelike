@@ -9,6 +9,10 @@
 class UParticleSystemComponent;
 class UProjectileMovementComponent;
 class USphereComponent;
+class USoundBase;
+class USoundAttenuation;
+class UParticleSystem;
+class UCameraShakeBase;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASMagicProjectile : public ASProjectileBase
@@ -20,10 +24,25 @@ public:
 	ASMagicProjectile();
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config|Sound")
+	USoundBase* ImpactSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config|Sound")
+	USoundAttenuation* ImpactSoundAttenuation;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config|FX")
+	UParticleSystem* ImpactEmitterTemplate;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config|FX")
+	TSubclassOf<UCameraShakeBase> WorldCameraShakeClass;
+
 	UFUNCTION()
 	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	                    int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	// Allow actors to initialize themselves on the C++ side after all of their components have been initialized
 	virtual void PostInitializeComponents() override;
+
+	virtual void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	                             FVector NormalImpulse, const FHitResult& Hit) override;
 };

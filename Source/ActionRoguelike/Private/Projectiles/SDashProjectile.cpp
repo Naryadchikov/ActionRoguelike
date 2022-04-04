@@ -12,7 +12,6 @@ ASDashProjectile::ASDashProjectile()
 {
 	// Set up root collision component
 	SphereComp->SetSphereRadius(20.0f);
-	SphereComp->OnComponentHit.AddDynamic(this, &ASDashProjectile::OnDashProjectileHit);
 
 	// Set up explosion effect component
 	ExplosionEffectComp = CreateDefaultSubobject<UParticleSystemComponent>("ExplosionEffectComp");
@@ -28,8 +27,7 @@ ASDashProjectile::ASDashProjectile()
 void ASDashProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-
-
+	
 	// Set explosion after specified time
 	const FTimerDelegate TimerDelegate_Explosion = FTimerDelegate::CreateUObject(
 		this, &ASDashProjectile::Explode, false, FVector::ZeroVector);
@@ -77,8 +75,8 @@ void ASDashProjectile::TeleportInstigator(FVector TeleportLocation)
 	Destroy();
 }
 
-void ASDashProjectile::OnDashProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
-                                           UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ASDashProjectile::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+                                       UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (GetWorldTimerManager().IsTimerActive(TimerHandle_Explosion))
 	{
