@@ -55,7 +55,8 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 		{
 			AttributeComp->ApplyHealthChange(-20.0f);
 
-			Destroy();
+			// Calling the same logic as on hit for spawning effects and destroying the projectile
+			OnProjectileHit(OverlappedComponent, OtherActor, OtherComp, SweepResult.ImpactNormal, SweepResult);
 		}
 	}
 }
