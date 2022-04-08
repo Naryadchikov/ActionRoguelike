@@ -38,4 +38,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Attributes")
 	bool IsAlive() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Attributes")
+	bool IsHealthMax() const;
 };

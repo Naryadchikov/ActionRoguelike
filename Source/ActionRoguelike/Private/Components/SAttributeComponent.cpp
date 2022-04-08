@@ -31,3 +31,8 @@ bool USAttributeComponent::IsAlive() const
 {
 	return Health > 0.0f;
 }
+
+bool USAttributeComponent::IsHealthMax() const
+{
+	return FMath::IsNearlyEqual(Health, MaxHealth);
+}
