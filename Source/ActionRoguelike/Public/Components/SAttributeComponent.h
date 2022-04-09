@@ -41,4 +41,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Attributes")
 	bool IsHealthMax() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Attributes")
+	float GetCurrentHealth() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Attributes")
+	float GetMaxHealth() const;
 };

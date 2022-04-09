@@ -36,3 +36,13 @@ bool USAttributeComponent::IsHealthMax() const
 {
 	return FMath::IsNearlyEqual(Health, MaxHealth);
 }
+
+float USAttributeComponent::GetCurrentHealth() const
+{
+	return Health;
+}
+
+float USAttributeComponent::GetMaxHealth() const
+{
+	return MaxHealth;
+}
