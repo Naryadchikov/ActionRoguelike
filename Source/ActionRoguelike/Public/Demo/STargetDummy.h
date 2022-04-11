@@ -14,7 +14,6 @@ class ACTIONROGUELIKE_API ASTargetDummy : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ASTargetDummy();
 
 protected:
@@ -29,7 +28,7 @@ protected:
 
 	// Allow actors to initialize themselves on the C++ side after all of their components have been initialized
 	virtual void PostInitializeComponents() override;
-	
+
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewValue, float Delta);
 };

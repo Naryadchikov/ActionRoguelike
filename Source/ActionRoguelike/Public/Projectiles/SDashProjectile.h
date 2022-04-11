@@ -6,16 +6,12 @@
 #include "SProjectileBase.h"
 #include "SDashProjectile.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class ACTIONROGUELIKE_API ASDashProjectile : public ASProjectileBase
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ASDashProjectile();
 
 protected:

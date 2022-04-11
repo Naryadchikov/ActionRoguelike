@@ -13,7 +13,6 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 
-// Sets default values
 ASAICharacter::ASAICharacter()
 {
 	// Set up Pawn Sensing Component

@@ -15,7 +15,6 @@ class ACTIONROGUELIKE_API ASExplosiveBarrel : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ASExplosiveBarrel();
 
 protected:

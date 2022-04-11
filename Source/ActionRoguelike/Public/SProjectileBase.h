@@ -17,7 +17,6 @@ class ACTIONROGUELIKE_API ASProjectileBase : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ASProjectileBase();
 
 protected:
@@ -42,8 +41,4 @@ protected:
 	UFUNCTION()
 	virtual void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	                             FVector NormalImpulse, const FHitResult& Hit);
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 };

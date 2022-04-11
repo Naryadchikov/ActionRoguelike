@@ -3,14 +3,12 @@
 
 #include "Components/SAttributeComponent.h"
 
-// Sets default values for this component's properties
 USAttributeComponent::USAttributeComponent()
 {
 	// Set default health value
 	Health = 100.0f;
 	MaxHealth = 100.0f;
 }
-
 
 bool USAttributeComponent::ApplyHealthChange(float Delta)
 {

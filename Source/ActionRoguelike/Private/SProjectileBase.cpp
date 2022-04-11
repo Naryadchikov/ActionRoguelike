@@ -8,7 +8,6 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 
-// Sets default values
 ASProjectileBase::ASProjectileBase()
 {
 	// Set up collision component
@@ -51,7 +50,6 @@ void ASProjectileBase::PostInitializeComponents()
 	SphereComp->OnComponentHit.AddDynamic(this, &ASProjectileBase::OnProjectileHit);
 }
 
-// Called when the game starts or when spawned
 void ASProjectileBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -65,10 +63,4 @@ void ASProjectileBase::BeginPlay()
 void ASProjectileBase::OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
                                        UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-}
-
-// Called every frame
-void ASProjectileBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }

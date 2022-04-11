@@ -76,7 +76,6 @@ protected:
 	FName DamagedMaterialParameterName;
 
 public:
-	// Sets default values for this character's properties
 	ASCharacter();
 
 protected:
@@ -91,9 +90,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USAttributeComponent* AttributeComp;
-
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 

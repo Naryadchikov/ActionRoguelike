@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "SInteractionComponent.generated.h"
 
-
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ACTIONROGUELIKE_API USInteractionComponent : public UActorComponent
 {
@@ -18,18 +17,8 @@ protected:
 	float InteractionRadius;
 
 public:
-	// Sets default values for this component's properties
 	USInteractionComponent();
 
 	// Interact action
 	void PrimaryInteract();
-
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
 };

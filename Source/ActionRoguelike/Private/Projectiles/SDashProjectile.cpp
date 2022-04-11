@@ -7,7 +7,6 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
-// Sets default values
 ASDashProjectile::ASDashProjectile()
 {
 	// Set up root collision component
@@ -27,7 +26,7 @@ ASDashProjectile::ASDashProjectile()
 void ASDashProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	// Set explosion after specified time
 	const FTimerDelegate TimerDelegate_Explosion = FTimerDelegate::CreateUObject(
 		this, &ASDashProjectile::Explode, false, FVector::ZeroVector);

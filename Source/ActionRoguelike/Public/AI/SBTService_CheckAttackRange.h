@@ -6,9 +6,6 @@
 #include "BehaviorTree/BTService.h"
 #include "SBTService_CheckAttackRange.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class ACTIONROGUELIKE_API USBTService_CheckAttackRange : public UBTService
 {
