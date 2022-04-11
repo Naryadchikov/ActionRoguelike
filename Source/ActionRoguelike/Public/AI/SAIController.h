@@ -17,6 +17,5 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UBehaviorTree* BehaviorTree;
 
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* InPawn) override;
 };

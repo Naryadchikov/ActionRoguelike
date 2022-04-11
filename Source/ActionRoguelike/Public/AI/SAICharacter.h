@@ -32,4 +32,10 @@ protected:
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
+
+public:
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Attributes")
+	bool IsAlive() const;
+
+	virtual void SpawnDefaultController() override;
 };

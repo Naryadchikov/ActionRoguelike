@@ -24,6 +24,9 @@ public:
 	ASMagicProjectile();
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Config|Damage", meta = (ClampMin = "0.0", UIMin = "0.0"))
+	float ProjectileDamage;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config|Sound")
 	USoundBase* ImpactSound;
 

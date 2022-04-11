@@ -3,22 +3,22 @@
 
 #include "AI/SAIController.h"
 
+#include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Kismet/GameplayStatics.h"
 
-void ASAIController::BeginPlay()
+void ASAIController::OnPossess(APawn* InPawn)
 {
-	Super::BeginPlay();
+	Super::OnPossess(InPawn);
 
 	if (ensureMsgf(BehaviorTree, TEXT("Behavior Tree is nullptr! Please assign BehaviorTree in your AI Controller.")))
 	{
+		// If Controller is possessed for the second+ time, then refresh cooldowns for decorators
+		if (UBlackboardComponent* BBComp = GetBlackboardComponent())
+		{
+			BBComp->SetValueAsBool("bRefreshCooldowns", true);
+		}
+
+		// Run BT
 		RunBehaviorTree(BehaviorTree);
 	}
-
-	// Temporary solution: set player location to BB
-	// if (APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
-	// {
-	// 	GetBlackboardComponent()->SetValueAsVector("MoveToLocation", PlayerPawn->GetActorLocation());
-	// 	GetBlackboardComponent()->SetValueAsObject("TargetActor", PlayerPawn);
-	// }
 }

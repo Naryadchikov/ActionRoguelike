@@ -20,9 +20,11 @@ bool USAttributeComponent::ApplyHealthChange(float Delta)
 		return false;
 	}
 
+	const float OldHealth = Health;
+
 	Health = FMath::Clamp(Health + Delta, 0.0f, MaxHealth);
 
-	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
+	OnHealthChanged.Broadcast(nullptr, this, Health, Health - OldHealth);
 
 	return true;
 }

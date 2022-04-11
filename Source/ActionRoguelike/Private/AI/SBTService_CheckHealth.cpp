@@ -26,7 +26,10 @@ void USBTService_CheckHealth::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 			if (ensureMsgf(
 				AttrComp, TEXT("Controlled Pawn must have AttributeComponent!")))
 			{
-				BlackboardComp->SetValueAsBool(LowHPKey.SelectedKeyName, AttrComp->GetCurrentHealth() <= LowHPValue);
+				const float CurrentHealth = AttrComp->GetCurrentHealth();
+				const bool bHeal = CurrentHealth < LowHPValue || FMath::IsNearlyEqual(CurrentHealth, LowHPValue);
+
+				BlackboardComp->SetValueAsBool(LowHPKey.SelectedKeyName, bHeal);
 			}
 		}
 	}

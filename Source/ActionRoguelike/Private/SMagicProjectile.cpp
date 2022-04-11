@@ -11,6 +11,8 @@
 ASMagicProjectile::ASMagicProjectile()
 {
 	SphereComp->SetSphereRadius(20.0f);
+
+	ProjectileDamage = 20.0f;
 }
 
 void ASMagicProjectile::PostInitializeComponents()
@@ -53,7 +55,7 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 
 		if (AttributeComp)
 		{
-			AttributeComp->ApplyHealthChange(-20.0f);
+			AttributeComp->ApplyHealthChange(-ProjectileDamage);
 
 			// Calling the same logic as on hit for spawning effects and destroying the projectile
 			OnProjectileHit(OverlappedComponent, OtherActor, OtherComp, SweepResult.ImpactNormal, SweepResult);
