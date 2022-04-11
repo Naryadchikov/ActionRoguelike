@@ -14,10 +14,16 @@ class ACTIONROGUELIKE_API ASAICharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+protected:
+	// Material parameter name for hit flash damage feedback
+	UPROPERTY(EditDefaultsOnly, Category = "Config|Damaged")
+	FName DamagedMaterialParameterName;
+
 public:
 	ASAICharacter();
 
 protected:
+	/* Components */
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UPawnSensingComponent* PawnSensingComp;
 

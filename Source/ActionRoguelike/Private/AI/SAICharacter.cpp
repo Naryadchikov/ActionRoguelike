@@ -21,7 +21,11 @@ ASAICharacter::ASAICharacter()
 	// Set up attribute component
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
 
+	// Get auto possessed when spawned or placed in the world
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	// Setup default name for parameter name for hit flash damage feedback
+	DamagedMaterialParameterName = TEXT("TimeToHit");
 }
 
 void ASAICharacter::PostInitializeComponents()
@@ -69,6 +73,9 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 				SetTargetActor(InstigatorActor);
 			}
 		}
+
+		// Damage feedback - hit flash
+		GetMesh()->SetScalarParameterValueOnMaterials(DamagedMaterialParameterName, GetWorld()->GetTimeSeconds());
 	}
 }
 

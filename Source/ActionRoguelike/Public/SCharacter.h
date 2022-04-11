@@ -72,6 +72,7 @@ protected:
 
 	FTimerHandle TimerHandle_Dash;
 
+	// Material parameter name for hit flash damage feedback
 	UPROPERTY(EditDefaultsOnly, Category = "Config|Damaged")
 	FName DamagedMaterialParameterName;
 
@@ -79,6 +80,7 @@ public:
 	ASCharacter();
 
 protected:
+	/* Components */
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USpringArmComponent* SpringArmComp;
 

@@ -46,3 +46,24 @@ float USAttributeComponent::GetMaxHealth() const
 {
 	return MaxHealth;
 }
+
+/* Static functions */
+USAttributeComponent* USAttributeComponent::GetAttributes(const AActor* FromActor)
+{
+	if (FromActor)
+	{
+		return Cast<USAttributeComponent>(FromActor->GetComponentByClass(StaticClass()));
+	}
+
+	return nullptr;
+}
+
+bool USAttributeComponent::IsActorAlive(const AActor* FromActor)
+{
+	if (const USAttributeComponent* AttributeComponent = GetAttributes(FromActor))
+	{
+		return AttributeComponent->IsAlive();
+	}
+
+	return false;
+}

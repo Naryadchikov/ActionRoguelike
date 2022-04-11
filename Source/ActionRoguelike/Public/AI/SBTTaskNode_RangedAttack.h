@@ -15,6 +15,9 @@ class ACTIONROGUELIKE_API USBTTaskNode_RangedAttack : public UBTTaskNode
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+public:
+	USBTTaskNode_RangedAttack();
+
 protected:
 	// Socket name for spawning projectiles
 	UPROPERTY(EditAnywhere, Category = "AI")
@@ -23,4 +26,9 @@ protected:
 	// Attack projectile class
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TSubclassOf<ASProjectileBase> ProjectileClass;
+
+	// Positive max bullet spread
+	// result spread will be in [-MaxBulletSpread; MaxBulletSpread] range for Yaw and [0; MaxBulletSpread] for Pitch
+	UPROPERTY(EditAnywhere, Category = "AI", meta = (ClampMin = "0.0", UIMin = "0.0"))
+	float MaxBulletSpread;
 };
