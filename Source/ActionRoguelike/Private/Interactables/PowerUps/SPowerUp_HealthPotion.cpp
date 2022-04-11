@@ -23,6 +23,6 @@ void ASPowerUp_HealthPotion::ApplyPowerUp(APawn* InstigatorPawn)
 	if (USAttributeComponent* InstigatorAttrComp = Cast<USAttributeComponent>(
 		InstigatorPawn->GetComponentByClass(USAttributeComponent::StaticClass())))
 	{
-		InstigatorAttrComp->ApplyHealthChange(HealValue);
+		InstigatorAttrComp->ApplyHealthChange(InstigatorPawn, HealValue);
 	}
 }

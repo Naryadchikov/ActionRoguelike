@@ -35,45 +35,58 @@ void ASAICharacter::PostInitializeComponents()
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewValue,
                                     float Delta)
 {
-	// If character get killed
-	if (NewValue <= 0.0f && Delta < 0.0f)
+	if (Delta < 0.0f)
 	{
-		if (AAIController* AIC = Cast<AAIController>(GetController()))
+		// If character get killed
+		if (NewValue <= 0.0f)
 		{
-			//AIC->GetBrainComponent()->StopLogic("Killed");
-			AIC->UnPossess();
-
-			// If Controller has 'ASAIController' class mark it as free controller 
-			if (ASAIController* S_AIC = Cast<ASAIController>(AIC))
+			if (AAIController* AIC = Cast<AAIController>(GetController()))
 			{
-				ASGameModeBase* GM = Cast<ASGameModeBase>(GetWorld()->GetAuthGameMode());
+				//AIC->GetBrainComponent()->StopLogic("Killed");
+				AIC->UnPossess();
 
-				if (GM)
+				// If Controller has 'ASAIController' class mark it as free controller 
+				if (ASAIController* S_AIC = Cast<ASAIController>(AIC))
 				{
-					GM->MarkControllerAsFree(S_AIC);
+					ASGameModeBase* GM = Cast<ASGameModeBase>(GetWorld()->GetAuthGameMode());
+
+					if (GM)
+					{
+						GM->MarkControllerAsFree(S_AIC);
+					}
 				}
 			}
-		}
 
-		// Stop movement and set life span
-		GetMovementComponent()->StopMovementImmediately();
-		SetLifeSpan(30.0f);
+			// Stop movement and set life span
+			GetMovementComponent()->StopMovementImmediately();
+			SetLifeSpan(30.0f);
+		}
+		else
+		{
+			// if instigator is not null and not other ai character / self, then set it as target actor
+			if (InstigatorActor && !InstigatorActor->GetClass()->IsChildOf(StaticClass()))
+			{
+				SetTargetActor(InstigatorActor);
+			}
+		}
 	}
 }
 
 void ASAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	AAIController* AIC = Cast<AAIController>(GetController());
+	SetTargetActor(Pawn);
+	DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
+}
 
-	if (AIC)
+void ASAICharacter::SetTargetActor(AActor* NewTarget)
+{
+	if (AAIController* AIC = Cast<AAIController>(GetController()))
 	{
 		UBlackboardComponent* BlackboardComp = AIC->GetBlackboardComponent();
 
 		if (ensure(BlackboardComp))
 		{
-			BlackboardComp->SetValueAsObject("TargetActor", Pawn);
-
-			DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
+			BlackboardComp->SetValueAsObject("TargetActor", NewTarget);
 		}
 	}
 }

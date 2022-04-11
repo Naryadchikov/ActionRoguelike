@@ -33,6 +33,9 @@ protected:
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
 
+	UFUNCTION()
+	void SetTargetActor(AActor* NewTarget);
+
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Attributes")
 	bool IsAlive() const;

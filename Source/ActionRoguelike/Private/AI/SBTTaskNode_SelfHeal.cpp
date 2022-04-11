@@ -44,9 +44,9 @@ EBTNodeResult::Type USBTTaskNode_SelfHeal::ExecuteTask(UBehaviorTreeComponent& O
 
 					// Create timer delegate to call apply health change after anim montage finishes
 					const FTimerDelegate TimerDelegate_Heal = FTimerDelegate::CreateLambda(
-						[this](USAttributeComponent* AttributeComponent)
+						[this, ControlledPawn](USAttributeComponent* AttributeComponent)
 						{
-							AttributeComponent->ApplyHealthChange(AttributeComponent->GetMaxHealth());
+							AttributeComponent->ApplyHealthChange(ControlledPawn, AttributeComponent->GetMaxHealth());
 							this->RestorePreviousAnimState();
 						}, AttrComp
 					);
@@ -62,7 +62,7 @@ EBTNodeResult::Type USBTTaskNode_SelfHeal::ExecuteTask(UBehaviorTreeComponent& O
 				}
 
 				// If heal anim montage is not specified heal instantly
-				AttrComp->ApplyHealthChange(AttrComp->GetMaxHealth());
+				AttrComp->ApplyHealthChange(ControlledPawn, AttrComp->GetMaxHealth());
 				UE_LOG(LogTemp, Warning, TEXT("Heal animation is not set in %s BTTask"), *GetNameSafe(this));
 
 				return EBTNodeResult::Succeeded;

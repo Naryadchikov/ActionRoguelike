@@ -10,7 +10,7 @@ USAttributeComponent::USAttributeComponent()
 	MaxHealth = 100.0f;
 }
 
-bool USAttributeComponent::ApplyHealthChange(float Delta)
+bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
 	if (Health <= 0.0f ||
 		Health >= MaxHealth && Delta > 0.0f)
@@ -22,7 +22,7 @@ bool USAttributeComponent::ApplyHealthChange(float Delta)
 
 	Health = FMath::Clamp(Health + Delta, 0.0f, MaxHealth);
 
-	OnHealthChanged.Broadcast(nullptr, this, Health, Health - OldHealth);
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, Health - OldHealth);
 
 	return true;
 }

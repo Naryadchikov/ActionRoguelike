@@ -15,7 +15,7 @@ EBTNodeResult::Type USBTTaskNode_RangedAttack::ExecuteTask(UBehaviorTreeComponen
 
 	if (ensure(BlackboardComp && OwnerController))
 	{
-		const ACharacter* OwnerCharacter = Cast<ACharacter>(OwnerController->GetPawn());
+		ACharacter* OwnerCharacter = Cast<ACharacter>(OwnerController->GetPawn());
 		const AActor* TargetActor = Cast<AActor>(BlackboardComp->GetValueAsObject("TargetActor"));
 
 		if (OwnerCharacter == nullptr || TargetActor == nullptr)
@@ -39,6 +39,7 @@ EBTNodeResult::Type USBTTaskNode_RangedAttack::ExecuteTask(UBehaviorTreeComponen
 		// Spawn attack projectile
 		FActorSpawnParameters Params;
 		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		Params.Instigator = OwnerCharacter;
 
 		const AActor* SpawnedProjectile = GetWorld()->SpawnActor<AActor>(
 			ProjectileClass, MuzzleLocation, MuzzleRotation, Params);
