@@ -44,6 +44,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Attributes")
 	bool IsAlive() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	bool Kill(AActor* InstigatorActor);
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Attributes")
 	bool IsHealthMax() const;
 

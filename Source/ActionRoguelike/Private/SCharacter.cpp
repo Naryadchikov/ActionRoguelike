@@ -7,6 +7,8 @@
 #include "SMagicProjectile.h"
 #include "Projectiles/SDashProjectile.h"
 #include "DrawDebugHelpers.h"
+#include "EngineUtils.h"
+#include "AI/SAICharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SAttributeComponent.h"
 #include "Components/SInteractionComponent.h"
@@ -275,4 +277,26 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ASCharacter::Dash);
 
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
+}
+
+// Debug heal self command
+void ASCharacter::HealSelf(const float Amount /* = 100.0f */)
+{
+	AttributeComp->ApplyHealthChange(this, Amount);
+}
+
+// Debug kill all bots command
+void ASCharacter::KillAll()
+{
+	for (TActorIterator<ASAICharacter> It(GetWorld()); It; ++It)
+	{
+		ASAICharacter* Bot = *It;
+
+		if (Bot->IsAlive())
+		{
+			USAttributeComponent* BotAttributeComponent = USAttributeComponent::GetAttributes(Bot);
+
+			BotAttributeComponent->Kill(this);
+		}
+	}
 }

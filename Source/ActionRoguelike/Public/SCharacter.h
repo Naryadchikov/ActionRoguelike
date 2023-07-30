@@ -136,4 +136,12 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Debug heal self command
+	UFUNCTION(Exec)
+	void HealSelf(const float Amount = 100.0f);
+
+	// Debug kill all bots command
+	UFUNCTION(Exec)
+	void KillAll();
 };

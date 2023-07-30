@@ -12,8 +12,9 @@ USAttributeComponent::USAttributeComponent()
 
 bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
-	if (Health <= 0.0f ||
-		Health >= MaxHealth && Delta > 0.0f)
+	if (Health <= 0.0f
+		|| Health >= MaxHealth && Delta > 0.0f
+		|| Delta < 0.0f && !GetOwner()->CanBeDamaged()) // for god mode ("god" console command)
 	{
 		return false;
 	}
@@ -30,6 +31,11 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 bool USAttributeComponent::IsAlive() const
 {
 	return Health > 0.0f;
+}
+
+bool USAttributeComponent::Kill(AActor* InstigatorActor)
+{
+	return ApplyHealthChange(InstigatorActor, -MaxHealth);
 }
 
 bool USAttributeComponent::IsHealthMax() const
