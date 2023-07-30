@@ -55,9 +55,7 @@ EBTNodeResult::Type USBTTaskNode_SelfHeal::ExecuteTask(UBehaviorTreeComponent& O
 						TimerHandle_Heal, TimerDelegate_Heal, HealAnimDuration, false);
 
 					// Set wait time for task
-					// TODO: Find out why it is not working anymore
-					/*FBTWaitTaskMemory* MyMemory = CastInstanceNodeMemory<FBTWaitTaskMemory>(NodeMemory);
-					MyMemory->RemainingWaitTime = HealAnimDuration;*/
+					SetNextTickTime(NodeMemory, HealAnimDuration);
 
 					return EBTNodeResult::InProgress;
 				}
@@ -91,7 +89,7 @@ EBTNodeResult::Type USBTTaskNode_SelfHeal::AbortTask(UBehaviorTreeComponent& Own
 
 	RestorePreviousAnimState();
 
-	return EBTNodeResult::Aborted;;
+	return EBTNodeResult::Aborted;
 }
 
 FString USBTTaskNode_SelfHeal::GetStaticDescription() const
