@@ -8,6 +8,8 @@
 
 class UPawnSensingComponent;
 class USAttributeComponent;
+class UUserWidget;
+class USWorldUserWidget;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASAICharacter : public ACharacter
@@ -18,6 +20,17 @@ protected:
 	// Material parameter name for hit flash damage feedback
 	UPROPERTY(EditDefaultsOnly, Category = "Config|Damaged")
 	FName DamagedMaterialParameterName;
+
+	// Health widget to spawn on damage received
+	UPROPERTY(EditDefaultsOnly, Category = "Config|UI")
+	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+
+	// Health widget initial world offset
+	UPROPERTY(EditDefaultsOnly, Category = "Config|UI")
+	FVector HealthBarWorldOffset;
+
+	UPROPERTY(BlueprintReadOnly)
+	USWorldUserWidget* HealthBarWidget;
 
 public:
 	ASAICharacter();

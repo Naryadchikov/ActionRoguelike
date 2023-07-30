@@ -9,9 +9,11 @@
 #include "AI/NavigationSystemBase.h"
 #include "AI/SAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Components/SAttributeComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "UI/SWorldUserWidget.h"
 
 ASAICharacter::ASAICharacter()
 {
@@ -61,6 +63,12 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 				}
 			}
 
+			// Destroy health bar widget
+			if (HealthBarWidget)
+			{
+				HealthBarWidget->RemoveFromParent();
+			}
+
 			// Stop movement and set life span
 			GetMovementComponent()->StopMovementImmediately();
 			SetLifeSpan(30.0f);
@@ -71,6 +79,19 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 			if (InstigatorActor && !InstigatorActor->GetClass()->IsChildOf(StaticClass()))
 			{
 				SetTargetActor(InstigatorActor);
+			}
+
+			// Spawn health bar widget on first damage received
+			if (HealthBarWidget == nullptr)
+			{
+				HealthBarWidget = CreateWidget<USWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+
+				if (HealthBarWidget)
+				{
+					HealthBarWidget->AttachedActor = this;
+					HealthBarWidget->WorldOffset = HealthBarWorldOffset;
+					HealthBarWidget->AddToViewport();
+				}
 			}
 		}
 
