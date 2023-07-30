@@ -55,8 +55,9 @@ EBTNodeResult::Type USBTTaskNode_SelfHeal::ExecuteTask(UBehaviorTreeComponent& O
 						TimerHandle_Heal, TimerDelegate_Heal, HealAnimDuration, false);
 
 					// Set wait time for task
-					FBTWaitTaskMemory* MyMemory = CastInstanceNodeMemory<FBTWaitTaskMemory>(NodeMemory);
-					MyMemory->RemainingWaitTime = HealAnimDuration;
+					// TODO: Find out why it is not working anymore
+					/*FBTWaitTaskMemory* MyMemory = CastInstanceNodeMemory<FBTWaitTaskMemory>(NodeMemory);
+					MyMemory->RemainingWaitTime = HealAnimDuration;*/
 
 					return EBTNodeResult::InProgress;
 				}
