@@ -3,7 +3,7 @@
 
 #include "SMagicProjectile.h"
 
-#include "Components/SAttributeComponent.h"
+#include "SGameplayFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -47,15 +47,11 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
                                        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                        const FHitResult& SweepResult)
 {
-	if (OtherActor)
+	if (OtherActor && OtherActor != GetInstigator())
 	{
-		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(
-			OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
-
-		if (AttributeComp)
+		if (USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, ProjectileDamage,
+		                                                      SweepResult))
 		{
-			AttributeComp->ApplyHealthChange(GetInstigator(), -ProjectileDamage);
-
 			// Calling the same logic as on hit for spawning effects and destroying the projectile
 			OnProjectileHit(OverlappedComponent, OtherActor, OtherComp, SweepResult.ImpactNormal, SweepResult);
 		}

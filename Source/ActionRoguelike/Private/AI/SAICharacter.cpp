@@ -4,12 +4,11 @@
 #include "AI/SAICharacter.h"
 
 #include "AIController.h"
-#include "EngineUtils.h"
 #include "SGameModeBase.h"
-#include "AI/NavigationSystemBase.h"
 #include "AI/SAIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SAttributeComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
@@ -28,6 +27,12 @@ ASAICharacter::ASAICharacter()
 
 	// Setup default name for parameter name for hit flash damage feedback
 	DamagedMaterialParameterName = TEXT("TimeToHit");
+
+	// TODO: Remove this line once new collision channel for projectile is created
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+
+	// Generate overlap events with the mesh to apply directional damage on projectile impact
+	GetMesh()->SetGenerateOverlapEvents(true);
 }
 
 void ASAICharacter::PostInitializeComponents()
@@ -69,8 +74,15 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 				HealthBarWidget->RemoveFromParent();
 			}
 
-			// Stop movement and set life span
+			// Ragdoll
+			GetMesh()->SetAllBodiesSimulatePhysics(true);
+			GetMesh()->SetCollisionProfileName("Ragdoll");
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+			// Stop movement
 			GetMovementComponent()->StopMovementImmediately();
+
+			// Set life span
 			SetLifeSpan(30.0f);
 		}
 		else
