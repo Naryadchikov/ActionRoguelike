@@ -4,13 +4,19 @@
 #include "SGameModeBase.h"
 
 #include "EngineUtils.h"
+#include "SCharacter.h"
 #include "AI/SAICharacter.h"
 #include "AI/SAIController.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 
+// Console variable for bot spawning
+static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("sar.SpawnBots"), true, TEXT("Enable bot spawning via timer."),
+                                                ECVF_Cheat);
+
 ASGameModeBase::ASGameModeBase()
 {
 	SpawnTimerInterval = 2.0f;
+	PlayerRespawnDelay = 2.0f;
 }
 
 void ASGameModeBase::StartPlay()
@@ -23,6 +29,14 @@ void ASGameModeBase::StartPlay()
 
 void ASGameModeBase::SpawnBotTimerElapsed()
 {
+	// Turn off bot spawning if CVarSpawnBots is false 
+	if (!CVarSpawnBots.GetValueOnGameThread())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Bot spawning is disabled via cvar `CVarSpawnBots`."));
+
+		return;
+	}
+
 	// Count alive bots on map
 	if (DifficultyCurve)
 	{
@@ -72,6 +86,17 @@ void ASGameModeBase::OnSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* Qu
 	}
 }
 
+void ASGameModeBase::RespawnPlayerElapsed(AController* Controller)
+{
+	if (ensure(Controller))
+	{
+		// Removing player character from controller to get new fresh copy from calling restart
+		Controller->UnPossess();
+
+		RestartPlayer(Controller);
+	}
+}
+
 ASAIController* ASGameModeBase::FindFreeController(TSubclassOf<AController> AIControllerClass)
 {
 	if (FreeControllers.IsEmpty())
@@ -115,4 +140,20 @@ ASAIController* ASGameModeBase::FindFreeController(TSubclassOf<AController> AICo
 void ASGameModeBase::MarkControllerAsFree(ASAIController* ControllerToMark)
 {
 	FreeControllers.Add(ControllerToMark);
+}
+
+void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
+{
+	if (const ASCharacter* Player = Cast<ASCharacter>(VictimActor))
+	{
+		FTimerHandle TimerHandle_RespawnDelay; // should be local variable for multiplayer
+		FTimerDelegate TimerDelegate_RespawnDelay;
+
+		TimerDelegate_RespawnDelay.BindUFunction(this, FName("RespawnPlayerElapsed"), Player->GetController());
+		Player->GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, TimerDelegate_RespawnDelay,
+		                                        PlayerRespawnDelay, false);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor),
+	       *GetNameSafe(KillerActor));
 }

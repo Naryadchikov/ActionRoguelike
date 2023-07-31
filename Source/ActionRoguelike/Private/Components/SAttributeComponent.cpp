@@ -3,6 +3,12 @@
 
 #include "Components/SAttributeComponent.h"
 
+#include "SGameModeBase.h"
+
+// Console variable for global damage multiplier
+static TAutoConsoleVariable<float> CVarDamageMultiplier(
+	TEXT("sar.DamageMultiplier"), 1.0f, TEXT("Global damage modifier for Attribute component."), ECVF_Cheat);
+
 USAttributeComponent::USAttributeComponent()
 {
 	// Set default health value
@@ -19,11 +25,33 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 		return false;
 	}
 
+	// Add damage multiplier from CVarDamageMultiplier
+	if (Delta < 0.0f)
+	{
+		const float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
+
+		Delta *= DamageMultiplier;
+	}
+
+	// Calculate new health value
 	const float OldHealth = Health;
 
 	Health = FMath::Clamp(Health + Delta, 0.0f, MaxHealth);
 
-	OnHealthChanged.Broadcast(InstigatorActor, this, Health, Health - OldHealth);
+	const float ActualDelta = Health - OldHealth;
+
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+
+	// Died
+	if (ActualDelta < 0.0f && Health == 0.0f)
+	{
+		ASGameModeBase* GM = GetWorld()->GetAuthGameMode<ASGameModeBase>();
+
+		if (GM)
+		{
+			GM->OnActorKilled(GetOwner(), InstigatorActor);
+		}
+	}
 
 	return true;
 }

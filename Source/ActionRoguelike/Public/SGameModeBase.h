@@ -34,11 +34,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TSubclassOf<AActor> MinionClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	float PlayerRespawnDelay;
+
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
 
 	UFUNCTION()
 	void OnSpawnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+	UFUNCTION()
+	void RespawnPlayerElapsed(AController* Controller);
 
 public:
 	ASGameModeBase();
@@ -48,4 +54,6 @@ public:
 	ASAIController* FindFreeController(TSubclassOf<AController> AIControllerClass);
 
 	void MarkControllerAsFree(ASAIController* ControllerToMark);
+
+	virtual void OnActorKilled(AActor* VictimActor, AActor* KillerActor);
 };
