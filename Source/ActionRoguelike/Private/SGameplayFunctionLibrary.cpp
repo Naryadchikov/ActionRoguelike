@@ -24,9 +24,11 @@ bool USGameplayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageCauser, AAc
 
 		if (HitComp && HitComp->IsSimulatingPhysics(HitResult.BoneName))
 		{
-			// TODO: Fix direction of the impact to be not the normal of the surface but the direction of the flying projectile
-			HitComp->AddImpulseAtLocation(-DamageAmount * 5000.0f * HitResult.ImpactNormal, HitResult.ImpactPoint,
-			                              HitResult.BoneName);
+			// Direction = Target - Origin
+			FVector Direction = HitResult.TraceEnd - HitResult.TraceStart;
+			Direction.Normalize();
+
+			HitComp->AddImpulseAtLocation(Direction * 200000.0f, HitResult.ImpactPoint, HitResult.BoneName);
 		}
 
 		return true;

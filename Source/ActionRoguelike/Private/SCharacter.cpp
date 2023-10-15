@@ -3,18 +3,15 @@
 
 #include "SCharacter.h"
 
-#include "SProjectileBase.h"
-#include "SMagicProjectile.h"
-#include "Projectiles/SDashProjectile.h"
 #include "DrawDebugHelpers.h"
 #include "EngineUtils.h"
 #include "AI/SAICharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/SActionComponent.h"
 #include "Components/SAttributeComponent.h"
 #include "Components/SInteractionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 ASCharacter::ASCharacter()
 {
@@ -39,14 +36,8 @@ ASCharacter::ASCharacter()
 	// Set up interaction component
 	InteractionComp = CreateDefaultSubobject<USInteractionComponent>("InteractionComp");
 
-	// Set up primary attack execution delay
-	PrimaryAttackExecutionDelay = 0.2f;
-
-	// Set up primary attack execution delay
-	SecondaryAttackExecutionDelay = 0.2f;
-
-	// Set up primary attack execution delay
-	DashExecutionDelay = 0.2f;
+	// Set up action component
+	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -84,128 +75,29 @@ void ASCharacter::MoveRight(float Value)
 	AddMovementInput(RightVector, Value);
 }
 
-void ASCharacter::PrimaryAttack()
+void ASCharacter::StartSprint()
 {
-	if (PrimaryAttackAnim)
-	{
-		if (!GetWorldTimerManager().IsTimerActive(TimerHandle_PrimaryAttack))
-		{
-			PlayAnimMontage(PrimaryAttackAnim);
-
-			if (PrimaryAttackCastEffect)
-			{
-				UGameplayStatics::SpawnEmitterAttached(PrimaryAttackCastEffect, GetMesh(), ProjectileSpawnSocketName,
-				                                       FVector::ZeroVector, FRotator::ZeroRotator,
-				                                       EAttachLocation::SnapToTarget);
-			}
-
-			GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::SpawnPrimaryAttackProjectile,
-			                                PrimaryAttackExecutionDelay);
-		}
-	}
-	else
-	{
-		SpawnPrimaryAttackProjectile();
-	}
+	ActionComp->StartActionByName(this, "Sprint");
 }
 
-void ASCharacter::SpawnPrimaryAttackProjectile()
+void ASCharacter::StopSprint()
 {
-	SpawnProjectile(PrimaryProjectileClass);
+	ActionComp->StopActionByName(this, "Sprint");
+}
+
+void ASCharacter::PrimaryAttack()
+{
+	ActionComp->StartActionByName(this, "PrimaryAttack");
 }
 
 void ASCharacter::BlackHoleAttack()
 {
-	if (SecondaryAttackAnim)
-	{
-		if (!GetWorldTimerManager().IsTimerActive(TimerHandle_SecondaryAttack))
-		{
-			PlayAnimMontage(SecondaryAttackAnim);
-			GetWorldTimerManager().SetTimer(TimerHandle_SecondaryAttack, this, &ASCharacter::SpawnBlackHoleProjectile,
-			                                SecondaryAttackExecutionDelay);
-		}
-	}
-	else
-	{
-		SpawnBlackHoleProjectile();
-	}
-}
-
-void ASCharacter::SpawnBlackHoleProjectile()
-{
-	SpawnProjectile(SecondaryProjectileClass);
+	ActionComp->StartActionByName(this, "SecondaryAttack");
 }
 
 void ASCharacter::Dash()
 {
-	if (DashAnim)
-	{
-		if (!GetWorldTimerManager().IsTimerActive(TimerHandle_Dash))
-		{
-			PlayAnimMontage(SecondaryAttackAnim);
-			GetWorldTimerManager().SetTimer(TimerHandle_Dash, this, &ASCharacter::SpawnDashProjectile,
-			                                DashExecutionDelay);
-		}
-	}
-	else
-	{
-		SpawnDashProjectile();
-	}
-}
-
-void ASCharacter::SpawnDashProjectile()
-{
-	SpawnProjectile(DashProjectileClass);
-}
-
-void ASCharacter::SpawnProjectile(TSubclassOf<ASProjectileBase> ClassToSpawn)
-{
-	if (ensureAlways(ClassToSpawn))
-	{
-		// find attack spawn location, which is the hand socket
-		const FVector SpawnLocation = [this]()
-		{
-			if (IsValid(GetMesh()) && GetMesh()->DoesSocketExist(ProjectileSpawnSocketName))
-			{
-				return GetMesh()->GetSocketLocation(ProjectileSpawnSocketName);
-			}
-			UE_LOG(LogTemp, Warning, TEXT("Mesh is invalid or socket with 'ProjectileSpawnSocketName' does not exist"));
-			return GetActorLocation();
-		}();
-
-		// find spawn rotation by line-tracing from camera to the world, finding desired 'impact' location
-		const FVector Start = CameraComp->GetComponentLocation();
-		const FVector End = Start + GetControlRotation().Vector() * 5000.f;
-
-		FCollisionObjectQueryParams ObjectQueryParams;
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
-		ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
-
-		FCollisionQueryParams CollisionQueryParams;
-		CollisionQueryParams.AddIgnoredActor(this);
-
-		FCollisionShape Shape;
-		Shape.SetSphere(20.f);
-
-		FHitResult Hit;
-		const bool bBlockingHit = GetWorld()->SweepSingleByObjectType(Hit, Start, End, FQuat::Identity,
-		                                                              ObjectQueryParams, Shape, CollisionQueryParams);
-
-		const FRotator SpawnRotation = FRotationMatrix::MakeFromX(
-				(bBlockingHit ? Hit.ImpactPoint : End) - SpawnLocation).
-			Rotator();
-
-		// spawn projectile
-		const FTransform SpawnTM = FTransform(SpawnRotation, SpawnLocation);
-
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpawnParams.Instigator = this;
-
-		GetWorld()->SpawnActor<ASProjectileBase>(ClassToSpawn, SpawnTM, SpawnParams);
-	}
+	ActionComp->StartActionByName(this, "Dash");
 }
 
 void ASCharacter::PrimaryInteract()
@@ -277,6 +169,9 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &ASCharacter::Dash);
 
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteract);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::StartSprint);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::StopSprint);
 }
 
 // Debug heal self command
