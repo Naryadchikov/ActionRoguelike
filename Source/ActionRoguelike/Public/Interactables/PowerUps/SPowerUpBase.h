@@ -19,6 +19,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Potion")
 	float Cooldown;
 
+	// Credit cost to use this power-up
+	UPROPERTY(EditAnywhere, Category = "Cost")
+	int32 CreditCost;
+
 	FTimerHandle TimerHandle_Interactable;
 
 public:

@@ -11,6 +11,9 @@ class ACTIONROGUELIKE_API ASPowerUp_HealthPotion : public ASPowerUpBase
 {
 	GENERATED_BODY()
 
+public:
+	ASPowerUp_HealthPotion();
+
 protected:
 	// Health restore value
 	UPROPERTY(EditAnywhere, Category = "Potion")

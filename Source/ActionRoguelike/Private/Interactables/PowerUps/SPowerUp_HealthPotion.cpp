@@ -5,6 +5,12 @@
 
 #include "Components/SAttributeComponent.h"
 
+ASPowerUp_HealthPotion::ASPowerUp_HealthPotion()
+{
+	HealValue = 30.0f;
+	CreditCost = 50;
+}
+
 bool ASPowerUp_HealthPotion::IsUsable(APawn* InstigatorPawn) const
 {
 	bool bUsable = false;

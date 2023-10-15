@@ -3,6 +3,7 @@
 
 #include "Interactables/PowerUps/SPowerUpBase.h"
 
+#include "SPlayerState.h"
 #include "Components/SphereComponent.h"
 
 ASPowerUpBase::ASPowerUpBase()
@@ -18,6 +19,9 @@ ASPowerUpBase::ASPowerUpBase()
 
 	// Setup default cooldown time
 	Cooldown = 10.0f;
+
+	// Default credit cost
+	CreditCost = 0;
 }
 
 void ASPowerUpBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -40,8 +44,20 @@ void ASPowerUpBase::Reactivate()
 
 bool ASPowerUpBase::IsUsable(APawn* InstigatorPawn) const
 {
+	if (!InstigatorPawn)
+	{
+		return false;
+	}
+
+	bool bPurchasable = true;
+
+	if (const ASPlayerState* PlayerState = Cast<ASPlayerState>(InstigatorPawn->GetPlayerState()))
+	{
+		bPurchasable = PlayerState->GetCredits() >= CreditCost;
+	}
+
 	// Add additional checks on InstigatorPawn in child classes and do not forget to call parent 'IsUsable'
-	return !GetWorld()->GetTimerManager().TimerExists(TimerHandle_Interactable);
+	return bPurchasable && !GetWorld()->GetTimerManager().TimerExists(TimerHandle_Interactable);
 }
 
 void ASPowerUpBase::ApplyPowerUp(APawn* InstigatorPawn)
@@ -54,7 +70,14 @@ void ASPowerUpBase::Interact_Implementation(APawn* InstigatorPawn)
 	if (IsUsable(InstigatorPawn))
 	{
 		ApplyPowerUp(InstigatorPawn);
+
+		if (ASPlayerState* PlayerState = Cast<ASPlayerState>(InstigatorPawn->GetPlayerState()))
+		{
+			PlayerState->RemoveCredits(CreditCost);
+		}
+
 		Deactivate();
+
 		GetWorldTimerManager().SetTimer(TimerHandle_Interactable, this, &ASPowerUpBase::Reactivate, Cooldown);
 	}
 }
