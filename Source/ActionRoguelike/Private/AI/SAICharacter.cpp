@@ -9,6 +9,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SActionComponent.h"
 #include "Components/SAttributeComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
@@ -21,6 +22,9 @@ ASAICharacter::ASAICharacter()
 
 	// Set up attribute component
 	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("AttributeComp");
+
+	// Set up action component
+	ActionComp = CreateDefaultSubobject<USActionComponent>("ActionComp");
 
 	// Get auto possessed when spawned or placed in the world
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;

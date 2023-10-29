@@ -8,6 +8,7 @@
 
 class UPawnSensingComponent;
 class USAttributeComponent;
+class USActionComponent;
 class UUserWidget;
 class USWorldUserWidget;
 
@@ -42,6 +43,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USAttributeComponent* AttributeComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	USActionComponent* ActionComp;
 
 	// Allow actors to initialize themselves on the C++ side after all of their components have been initialized
 	virtual void PostInitializeComponents() override;
