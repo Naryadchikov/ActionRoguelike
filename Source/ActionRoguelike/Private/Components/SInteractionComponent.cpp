@@ -5,7 +5,7 @@
 
 #include "DrawDebugHelpers.h"
 #include "SInteractableInterface.h"
-#include "ProfilingDebugging/CookStats.h"
+#include "UI/SWorldUserWidget.h"
 
 // Console variable for showing debug info
 static TAutoConsoleVariable<bool> CVarShowInteractionDebugInfo(
@@ -13,10 +13,25 @@ static TAutoConsoleVariable<bool> CVarShowInteractionDebugInfo(
 
 USInteractionComponent::USInteractionComponent()
 {
+	PrimaryComponentTick.bCanEverTick = true;
+
 	InteractionRadius = 250.0f;
+
+	InteractionChannel = ECC_WorldDynamic;
+
+	FocusedActor = nullptr;
 }
 
-void USInteractionComponent::PrimaryInteract()
+void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                           FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	FindBestInteractable();
+}
+
+
+void USInteractionComponent::FindBestInteractable()
 {
 	bool bShowInteractionDebugInfo = CVarShowInteractionDebugInfo.GetValueOnGameThread();
 
@@ -30,7 +45,7 @@ void USInteractionComponent::PrimaryInteract()
 
 	// Sweep for all dynamic objects around the owner
 	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(InteractionChannel);
 
 	TArray<FHitResult> Hits;
 
@@ -45,6 +60,9 @@ void USInteractionComponent::PrimaryInteract()
 	{
 		DrawDebugSphere(GetWorld(), MyOwner->GetActorLocation(), InteractionRadius, 32, FColor::Yellow, false, 2.0f);
 	}
+
+	// Clear focused actor
+	FocusedActor = nullptr;
 
 	// if we hit something
 	if (bBlockingHit)
@@ -74,8 +92,8 @@ void USInteractionComponent::PrimaryInteract()
 				return DotA > DotB;
 			});
 
-			// Interact with closest to the sight actor
-			ISInteractableInterface::Execute_Interact(FilteredHits[0].GetActor(), Cast<APawn>(MyOwner));
+			// Set focused actor as the one that is closest to the sight
+			FocusedActor = FilteredHits[0].GetActor();
 
 			// Draw debug spheres on all swept interactable objects' impact points
 			if (bShowInteractionDebugInfo)
@@ -89,4 +107,39 @@ void USInteractionComponent::PrimaryInteract()
 			}
 		}
 	}
+
+	// Add UI widget to viewport if interactable focused actor is valid 
+	if (FocusedActor)
+	{
+		if (DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
+		{
+			DefaultWidgetInstance = CreateWidget<USWorldUserWidget>(GetWorld(), DefaultWidgetClass);
+		}
+
+		DefaultWidgetInstance->AttachedActor = FocusedActor;
+
+		if (!DefaultWidgetInstance->IsInViewport())
+		{
+			DefaultWidgetInstance->AddToViewport();
+		}
+	}
+	else
+	{
+		if (DefaultWidgetInstance && DefaultWidgetInstance->IsInViewport())
+		{
+			DefaultWidgetInstance->RemoveFromParent();
+		}
+	}
+}
+
+void USInteractionComponent::PrimaryInteract()
+{
+	if (FocusedActor == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("No focused actor"));
+		return;
+	}
+
+	// Interact with closest to the sight actor
+	ISInteractableInterface::Execute_Interact(FocusedActor, Cast<APawn>(GetOwner()));
 }
