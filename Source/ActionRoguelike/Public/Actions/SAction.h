@@ -33,6 +33,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FName ActionName; // FName is hashed string, so it's faster to compare
 
+	// Start immediately when added to the action component
+	UPROPERTY(EditDefaultsOnly, Category = "Action")
+	bool bAutoStart;
+	
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
 	bool CanStart(AActor* Instigator);
 

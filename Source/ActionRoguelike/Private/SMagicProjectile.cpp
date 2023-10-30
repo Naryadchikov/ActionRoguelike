@@ -3,6 +3,7 @@
 
 #include "SMagicProjectile.h"
 
+#include "SActionEffect.h"
 #include "SGameplayFunctionLibrary.h"
 #include "Components/SActionComponent.h"
 #include "Components/SphereComponent.h"
@@ -51,7 +52,7 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 {
 	if (OtherActor && OtherActor != GetInstigator())
 	{
-		const USActionComponent* ActionComp = Cast<USActionComponent>(
+		USActionComponent* ActionComp = Cast<USActionComponent>(
 			OtherActor->GetComponentByClass(USActionComponent::StaticClass()));
 
 		if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag))
@@ -67,6 +68,11 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 		{
 			// Calling the same logic as on hit for spawning effects and destroying the projectile
 			OnProjectileHit(OverlappedComponent, OtherActor, OtherComp, SweepResult.ImpactNormal, SweepResult);
+
+			if (ActionComp && DamageEffectClass)
+			{
+				ActionComp->AddAction(GetInstigator(), DamageEffectClass);
+			}
 		}
 	}
 }

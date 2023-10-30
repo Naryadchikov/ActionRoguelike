@@ -7,6 +7,7 @@
 #include "SProjectileBase.h"
 #include "SMagicProjectile.generated.h"
 
+class USActionEffect;
 class UParticleSystemComponent;
 class UProjectileMovementComponent;
 class USphereComponent;
@@ -27,6 +28,9 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Config|Damage", meta = (ClampMin = "0.0", UIMin = "0.0"))
 	float ProjectileDamage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Config|Damage")
+	TSubclassOf<USActionEffect> DamageEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Config|GameplayTags")
 	FGameplayTag ParryTag;
